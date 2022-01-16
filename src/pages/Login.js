@@ -1,39 +1,47 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
-import actionaddEmail from '../actions';
-
-const MAXPASSWORDVALUE = 6;
-const TESTEMAIL = 'XXXXXXXXXXXX';
+import { Redirect } from 'react-router';
+import { actionaddUser } from '../actions';
 
 class Login extends React.Component {
   constructor() {
     super();
-    this.stat = {
+    this.state = {
       email: '',
       password: '',
       redirect: false,
+      buttonDisable: true,
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleOnClick = this.handleOnClick.bind(this);
   }
 
-  handleChange({ target }) {
-    this.setState({ [target.name]: target.value });
+  buttonValidation = () => {
+    const { email, password } = this.state;
+    const validRegex = /\S+@\S+\.\S+/;
+    const minPasswordLength = 6;
+
+    if (validRegex.test(email) && password.length >= minPasswordLength) {
+      this.setState({ buttonDisable: false });
+    } else {
+      this.setState({ buttonDisable: true });
+    }
   }
 
-  handleOnClick() {
-    const { addEmail } = this.props;
-    const { email } = this.state;
-    addEmail(email);
-    this.setState({ redirect: true });
+  handleChange = ({ target }) => {
+    const { name, value } = target;
+    this.setState({
+      [name]: value,
+    }, () => {
+      this.buttonValidation();
+    });
   }
 
   render() {
-    const { email, password, redirect } = this.state;
+    const { email, password, redirect, buttonDisable } = this.state;
+    const { user } = this.props;
+    if (redirect) return <Redirect to="/carteira" />;
     return (
       <div>
-        {(redirect === true) && <Redirect to="carteira" />}
         <form>
           <input
             data-testid="email-input"
@@ -44,7 +52,7 @@ class Login extends React.Component {
             onChange={ this.handleChange }
           />
           <input
-            data-testid="password"
+            data-testid="password-input"
             type="password"
             name="password"
             id="password"
@@ -53,8 +61,11 @@ class Login extends React.Component {
           />
           <button
             type="button"
-            disabled={ !(TESTEMAIL.test(email) && password.lenght >= MAXPASSWORDVALUE) }
-            onClick={ this.handleOnClick }
+            onClick={ () => {
+              user(email);
+              this.setState({ redirect: true });
+            } }
+            disabled={ buttonDisable }
           >
             Entrar
           </button>
@@ -65,14 +76,14 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
-  addEmail: PropTypes.func.isRequired,
+  user: PropTypes.func.isRequired,
 };
 
 // Vai ser necessário apenas alterções das informações
 // E não leitura, então o primeiro parametro do connect será null
 
 const mapDispatchToProps = (dispatch) => ({
-  dispatchAction: (value) => dispatch(actionaddEmail(value)),
+  user: (email) => dispatch(actionaddUser(email)),
 });
 
-export default (null, mapDispatchToProps)(Login);
+export default connect(null, mapDispatchToProps)(Login);

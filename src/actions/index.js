@@ -1,9 +1,10 @@
+// Coloque aqui suas actions
 // A action retorna um objeto, recebe o parametro que será modificado
 // e contem um tipo que será usado no switch, dentro do reducer
 
-const actionaddEmail = (state) => ({
-  type: 'ADICIONAREMAIL',
-  state,
-});
+export const ADICIONAR_USER = 'ADICIONAR_USER';
 
-export default actionaddEmail;
+export const actionaddUser = (email) => ({
+  type: 'ADICIONAR_USER',
+  email,
+});
