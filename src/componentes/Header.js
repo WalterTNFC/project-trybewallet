@@ -6,7 +6,7 @@ const INITIAL_VALUE = 0;
 
 class Wallet extends React.Component {
   render() {
-    const { emailField, total } = this.props;
+    const { emailField, totalValue } = this.props;
     return (
       <div>
         <header>
@@ -14,7 +14,7 @@ class Wallet extends React.Component {
             { emailField }
           </p>
           <p data-testid="total-field">
-            { total || INITIAL_VALUE }
+            { totalValue || INITIAL_VALUE }
           </p>
           <p data-testid="header-currency-field">
             BRL
@@ -28,12 +28,12 @@ class Wallet extends React.Component {
 
 const mapStateToProps = (state) => ({
   emailField: state.user.email,
-  total: state.Wallet.totalValue,
+  totalValue: state.wallet.totalValue,
 });
 
 Wallet.propTypes = {
   emailField: PropTypes.func.isRequired,
-  total: PropTypes.func.isRequired,
+  totalValue: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, null)(Wallet);
